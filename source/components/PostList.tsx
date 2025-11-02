@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Post } from '../model/entities/post';
 import { PostService } from '../model/services/postService';
 
-export default function PostListRefactor() {
+export default function PostList() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [posts, setPosts] = useState<Post[]>([]);
