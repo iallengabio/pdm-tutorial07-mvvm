@@ -5,37 +5,59 @@
 - A tela principal exibe uma lista de posts obtidos da API pública `jsonplaceholder`.
 - O objetivo é separar claramente responsabilidades entre Model, ViewModel e View.
 
+## Conceitos (Didático)
+- View: renderiza UI com base em estado. Não chama serviços nem contém regras de negócio. Neste projeto, `PostList` mostra loading, erro e dados.
+- ViewModel: orquestra chamadas ao serviço, mantém estado e expõe ações para a View. Centraliza tratamento de erros e regras. Aqui, `usePosts` fornece `{ posts, loading, error, refresh }`.
+- Model: define entidades e serviços para dados. Não conhece UI. `Post` define a estrutura dos dados; `PostService` acessa HTTP e retorna tipos.
+
+## Explicando cada parte
+- `source/components/PostList.tsx` (View)
+  - Usa `usePosts` para obter estados e ação `refresh`.
+  - Renderiza spinner centralizado quando `loading` é verdadeiro.
+  - Exibe mensagem de erro e botão “Recarregar” que chama `refresh`.
+  - Lista cards com título e corpo quando há dados.
+- `source/viewmodel/usePosts.ts` (ViewModel)
+  - Estado: `posts`, `loading`, `error`.
+  - Ação: `refresh` que busca dados no serviço e atualiza o estado.
+  - Efeito inicial: chama `refresh` ao montar.
+  - Trata erros definindo uma mensagem amigável em `error`.
+- `source/model/entities/post.ts` e `source/model/services/postService.ts` (Model)
+  - Entidade `Post` com tipos explícitos.
+  - Serviço `PostService.getPosts()` usa `axios` para obter dados e retorna `Promise<Post[]>`.
+
 ## Arquitetura (MVVM)
 - Model: define entidades e serviços de dados.
-  - `model/entities/post.ts`: entidade `Post` (tipos/estrutura).
-  - `model/services/postService.ts`: acesso HTTP via `axios` e retorno tipado.
+  - `source/model/entities/post.ts`: entidade `Post` (tipos/estrutura).
+  - `source/model/services/postService.ts`: acesso HTTP via `axios` e retorno tipado.
 - ViewModel: orquestra chamadas ao serviço e expõe estado/ações para a UI.
-  - `hooks/usePosts.ts`: estados `posts`, `loading`, `error` e ação `refresh`.
+  - `source/viewmodel/usePosts.ts`: estados `posts`, `loading`, `error` e ação `refresh`.
 - View: renderiza a interface com base no estado do ViewModel.
-  - `components/PostList.tsx`: exibe loading/erro/dados consumindo `usePosts`.
+  - `source/components/PostList.tsx`: exibe loading/erro/dados consumindo `usePosts`.
 
 ## Estrutura do Projeto
 ```
 / (raiz)
-├── App.tsx
+├── .trae/
+│   └── rules/
+│       └── project_rules.md
 ├── README.md
 ├── app.json
-├── assets/
-│   ├── adaptive-icon.png
-│   ├── favicon.png
-│   ├── icon.png
-│   └── splash-icon.png
-├── components/
-│   └── PostList.tsx
-├── hooks/
-│   └── usePosts.ts
 ├── index.ts
-├── model/
-│   ├── entities/
-│   │   └── post.ts
-│   └── services/
-│       └── postService.ts
 ├── package.json
+├── source/
+│   ├── App.tsx
+│   ├── components/
+│   │   ├── README.md
+│   │   └── PostList.tsx
+│   ├── model/
+│   │   ├── entities/
+│   │   │   └── post.ts
+│   │   └── services/
+│   │       └── postService.ts
+│   │   └── README.md
+│   └── viewmodel/
+│       ├── README.md
+│       └── usePosts.ts
 └── tsconfig.json
 ```
 
